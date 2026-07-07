@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API = "http://localhost:8081/api/soporte";
+const API = "http://localhost:8082/api/soporte";
 const PRIMARY = "#243A76";
 const PRIMARY_LIGHT = "#2d4a96";
 
