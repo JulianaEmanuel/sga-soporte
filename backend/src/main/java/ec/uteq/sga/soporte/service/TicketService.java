@@ -63,9 +63,13 @@ public class TicketService {
             """;
 
     private final NamedParameterJdbcTemplate jdbc;
+    private final TecnicoService tecnicoService;
+    private final EmailService emailService;
 
-    public TicketService(NamedParameterJdbcTemplate jdbc) {
+    public TicketService(NamedParameterJdbcTemplate jdbc, TecnicoService tecnicoService, EmailService emailService) {
         this.jdbc = jdbc;
+        this.tecnicoService = tecnicoService;
+        this.emailService = emailService;
     }
 
     public List<Map<String, Object>> listar() {
@@ -199,6 +203,14 @@ public class TicketService {
 
         if (!estado.equals(estadoAnterior)) {
             registrarHistorial(id, "ESTADO", estadoAnterior, estado, modificadoPor);
+            String creadoPor = (String) actual.get("creadoPor");
+            String correo = tecnicoService.obtenerCorreo(creadoPor);
+            emailService.notificarCambioEstado(
+                    correo,
+                    (String) actual.get("numeroTicket"),
+                    (String) actual.get("titulo"),
+                    estadoAnterior,
+                    estado);
         }
         if (req.asignadoA() != null && !req.asignadoA().equals(asignadoAnterior)) {
             registrarHistorial(id, "ASIGNADO_A", asignadoAnterior, req.asignadoA(), modificadoPor);

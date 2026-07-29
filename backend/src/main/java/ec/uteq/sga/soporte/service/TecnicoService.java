@@ -50,4 +50,24 @@ public class TecnicoService {
                 })
                 .toList();
     }
+
+    /**
+     * Correo de un usuario por su username, para notificarle cuando su
+     * ticket cambia de estado. Devuelve null si no se encuentra o si
+     * sga-principal no responde (nunca bloquea la actualizacion del ticket).
+     */
+    public String obtenerCorreo(String username) {
+        if (username == null || username.isBlank()) {
+            return null;
+        }
+        try {
+            return grpcClient.listarPorRol("").stream()
+                    .filter(u -> username.equals(u.get("username")))
+                    .map(u -> (String) u.get("correo"))
+                    .findFirst()
+                    .orElse(null);
+        } catch (StatusRuntimeException e) {
+            return null;
+        }
+    }
 }
